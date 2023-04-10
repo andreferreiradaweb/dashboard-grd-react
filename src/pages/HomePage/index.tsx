@@ -293,7 +293,6 @@ export function HomePage() {
               style={{ marginTop: '10px' }}
               name="number"
               onChange={handleChange}
-              value={values.number}
               placeholder="Buscar projeto por nome ou ID"
             />
             <Button
