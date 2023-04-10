@@ -1,9 +1,9 @@
 import { IconWrapper, Input, Wrapper } from './styled'
-import { BiEdit } from 'react-icons/bi'
+import { BiSearch } from 'react-icons/bi'
 import { colors } from '../../theme'
 
 interface Props {
-  label?: string
+  placeholder?: string
   style?: React.CSSProperties
   value?: string
   onChange?: any
@@ -11,8 +11,8 @@ interface Props {
   disabled?: boolean
 }
 
-export function InputSelected({
-  label,
+export function InputSearch({
+  placeholder,
   onChange,
   style,
   disabled,
@@ -22,15 +22,15 @@ export function InputSelected({
   return (
     <>
       <Wrapper style={style}>
-        <label htmlFor="">{label}</label>
         <Input
           disabled={disabled}
           name={name}
           onChange={onChange}
           value={value}
+          placeholder={placeholder}
         />
         <IconWrapper>
-          <BiEdit size="22" fill={colors.primary} />
+          <BiSearch size="22" fill={colors.primary} />
         </IconWrapper>
       </Wrapper>
     </>

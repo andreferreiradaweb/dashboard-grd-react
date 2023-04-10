@@ -1,3 +1,12 @@
+:root {
+  --primary-color: #002258;
+  --secondary-color: #58596B;
+  --background-color: #fefefe;
+  --border-color-500: #cfcfcf;
+  --success-color: #2BD828;
+  --warning-color: #D356FF;
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -41,3 +50,19 @@ button {
     color: #fff;
     font-weight: 500;
   }
+
+  /* Remove default margin */
+body,
+h1,
+h2,
+h3,
+h4,
+p,
+ul[class],
+ol[class],
+figure,
+blockquote,
+dl,
+dd {
+  margin: 0;
+}

@@ -14,10 +14,10 @@ export const Wrapper = styled.div`
 
 export const Input = styled.input`
   width: 100%;
-  height: 100%;
+  height: 44px;
   border: none;
   border-radius: 4px;
-  padding: 10px;
+  padding: 10px 20px;
   outline: none;
   position: relative;
   margin-top: 5px;
@@ -26,7 +26,7 @@ export const Input = styled.input`
 
 export const IconWrapper = styled.div`
   position: absolute;
-  bottom: 5px;
-  right: 5px;
+  bottom: 7px;
+  right: 12px;
   cursor: default;
 `

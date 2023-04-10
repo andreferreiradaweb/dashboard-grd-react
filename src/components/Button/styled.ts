@@ -18,16 +18,12 @@ export const MyButton = styled.button<MyButtonTypes>`
     customColor,
     customStyles,
   }) => css`
-    background-color: ${disabled
-      ? colors.primary.ligther
-      : colors.primary.medium};
+    background-color: ${disabled ? colors.secondary : colors.primary};
     cursor: ${disabled ? 'default' : 'pointer'};
     border-radius: 4px;
-    border: ${outlined ? `2px solid ${colors.primary.medium}` : 'none'};
-    background-color: ${outlined
-      ? colors.primary.ligther
-      : colors.primary.medium};
-    background-color: ${(!outlined && customColor) ?? colors.primary.medium};
+    border: ${outlined ? `2px solid ${colors.primary}` : 'none'};
+    background-color: ${outlined ? 'transparent' : colors.primary};
+    background-color: ${(!outlined && customColor) ?? colors.primary};
     min-height: ${small ? '40px' : '56px'};
     max-height: 520px;
     padding: 0 5px;
@@ -38,7 +34,7 @@ export const MyButton = styled.button<MyButtonTypes>`
     margin-top: 20px;
     width: ${customSize ?? '100%'};
     height: auto;
-    color: ${outlined ? colors.primary.medium : '#fff'};
+    color: ${outlined ? colors.primary : '#fff'};
     ${customStyles ?? ''}
 
     &:hover {

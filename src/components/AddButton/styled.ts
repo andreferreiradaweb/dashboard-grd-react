@@ -5,7 +5,7 @@ export const Wrapper = styled.button`
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: ${colors.primary.medium};
+  background-color: ${colors.primary};
   display: flex;
   justify-content: center;
   align-items: center;

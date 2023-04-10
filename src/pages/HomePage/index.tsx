@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { UserServices } from '../../services/'
-import { IUser } from '../../interfaces/user'
+import { GRDServices } from '../../services/'
+import { IGRDs } from '../../interfaces/grd'
 import Modal from 'react-modal'
 import { HiOutlineTrash, HiOutlinePencil } from 'react-icons/hi'
 import { MdClose } from 'react-icons/md'
@@ -9,30 +9,41 @@ import DataTable from 'react-data-table-component'
 import {
   Wrapper,
   Container,
-  Title,
   WrapperDataTable,
   MyButton,
   ModalContent,
   styles,
   customStyleModal,
+  Text,
+  WrapperHeaders,
 } from './styles'
 import { AddButton } from '../../components/AddButton'
 import { InputSelected } from '../../components/InputSelected'
 import { Notify, NotifyTypes } from '../../components/Notify'
 import { Button } from '../../components/Button'
 import { useFormik } from 'formik'
+import { Header } from '../../components/Header'
+import { Bredcrumb } from '../../components/Bredcrumb'
+import { InputSearch } from '../../components/InputSearch'
+import { gerarId } from '../../utils/gerarId'
+import { colors } from '../../theme'
+import { ProjectRow } from '../../components/ProjectRow'
 
 const initialValues = {
-  firstname: '',
-  email: '',
-  phone: '',
-  city: '',
-  street: '',
-  number: '',
+  id: 0,
+  name: '',
+  description: '',
+  status: 0,
+  files: 0,
+  responsible: '',
+  project: {
+    id: 0,
+    name: '',
+  },
 }
 
 export function HomePage() {
-  const [users, setUsers] = useState<Array<IUser> | null>(null)
+  const [users, setUsers] = useState<Array<IGRDs> | null>(null)
   const [isModalAdd, setIsModalAdd] = useState<boolean>(false)
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -45,45 +56,57 @@ export function HomePage() {
   const headers = [
     {
       id: 1,
-      name: 'NOME',
-      selector: (row: IUser) => row.name.firstname,
+      name: 'Nome',
+      selector: (row: IGRDs) => row.name,
       sortable: true,
       reorder: true,
     },
     {
       id: 2,
-      name: 'E-MAIL',
-      selector: (row: IUser) => row.email,
+      name: 'Status',
+      selector: (row: IGRDs) =>
+        row.status === 0 ? (
+          <Text color={colors.successColor}>Concluído</Text>
+        ) : (
+          <Text color={colors.warningColor}>Incompleto</Text>
+        ),
       sortable: true,
       reorder: true,
     },
     {
       id: 3,
-      name: 'TELEFONE',
-      selector: (row: IUser) => row.phone,
+      name: 'Responsável',
+      selector: (row: IGRDs) => row.responsible,
       sortable: true,
       reorder: true,
     },
     {
       id: 4,
-      name: 'CIDADE',
-      selector: (row: IUser) => row.address.city,
+      name: 'Projeto',
+      selector: (row: IGRDs) => row.project.name,
       sortable: true,
       reorder: true,
     },
     {
       id: 5,
-      name: 'AÇÕES',
-      selector: (row: IUser) => (
+      name: 'ID',
+      selector: (row: IGRDs) => row.id,
+      sortable: true,
+      reorder: true,
+    },
+    {
+      id: 6,
+      name: 'Ações',
+      selector: (row: IGRDs) => (
         <>
           <MyButton
             style={{ marginRight: '10px' }}
             onClick={() => handleDeleteItem(Number(row.id))}
           >
-            <HiOutlineTrash />
+            <HiOutlineTrash size="17" />
           </MyButton>
           <MyButton onClick={() => handlePressEdit(row.id)}>
-            <HiOutlinePencil />
+            <HiOutlinePencil size="17" />
           </MyButton>
         </>
       ),
@@ -98,12 +121,16 @@ export function HomePage() {
     const user = users?.find((user) => user.id === userId)
     if (!user) return
     setValues({
-      firstname: user.name.firstname,
-      city: user.address.city,
-      email: user.email,
-      phone: user.phone,
-      number: user.address.number.toString(),
-      street: user.address.street,
+      id: user.id,
+      name: user.name,
+      description: user.description,
+      status: user.status,
+      files: user.files,
+      responsible: user.responsible,
+      project: {
+        id: user.project.id,
+        name: user.project.name,
+      },
     })
     toggleModal()
     setSelectedUserId(userId)
@@ -113,22 +140,21 @@ export function HomePage() {
   async function handleDeleteItem(userId: number) {
     try {
       if (!users) return
-      await UserServices.deleteUser(userId)
-      const newUsers = users.filter((user: IUser) => user.id !== userId)
+      const newUsers = users.filter((user: IGRDs) => user.id !== userId)
       setUsers(newUsers)
-      Notify(NotifyTypes.SUCCESS, 'Usuário deletado com sucesso')
+      Notify(NotifyTypes.SUCCESS, 'GRD deletada com sucesso')
     } catch (error) {
       console.error({ error })
       Notify(
         NotifyTypes.ERROR,
-        'Erro ao deletar usuário, por favor tente novamente'
+        'Erro ao deletar GRD, por favor tente novamente'
       )
     }
   }
 
-  const getUsers = async () => {
+  const getGRDs = () => {
     try {
-      const response = await UserServices.getUsers()
+      const response = GRDServices.getGRDs()
       setUsers(response)
     } catch (error) {
       console.error({ error })
@@ -136,40 +162,32 @@ export function HomePage() {
   }
 
   useEffect(() => {
-    getUsers()
+    getGRDs()
   }, [])
 
-  const addUser = async (user: Omit<IUser, 'id'>) => {
+  const addGRD = async (user: IGRDs) => {
     try {
-      const newUser = await UserServices.addUser(user)
-      Notify(NotifyTypes.SUCCESS, 'Usuário adicionado com sucesso')
-
-      setUsers((oldUsers) =>
-        oldUsers
-          ? [...oldUsers, { ...user, id: newUser.id }]
-          : [{ ...user, id: newUser.id }]
-      )
+      if (!user) return
+      setUsers((oldGRDs) => (oldGRDs ? [...oldGRDs, { ...user }] : null))
+      Notify(NotifyTypes.SUCCESS, 'GRD adicionada com sucesso')
     } catch (error) {
       console.error({ error })
-
       Notify(
         NotifyTypes.ERROR,
-        'Erro ao cadastrar usuário, por favor tente novamente'
+        'Erro ao cadastrar GRD, por favor tente novamente'
       )
     } finally {
       toggleModal()
     }
   }
 
-  const updateUser = async (newUser: IUser) => {
+  const updateUser = async (newUser: IGRDs) => {
     try {
       if (!users) return
-      await UserServices.updateUser(newUser)
-      Notify(NotifyTypes.SUCCESS, 'Usuário atualizado com sucesso')
-
       const updatedUsers = users.map((user) =>
         user.id === newUser.id ? newUser : user
       )
+      Notify(NotifyTypes.SUCCESS, 'Usuário atualizado com sucesso')
 
       setUsers(updatedUsers)
     } catch (error) {
@@ -186,124 +204,146 @@ export function HomePage() {
 
   async function handlePressSubmit() {
     const { city, email, firstname, number, phone, street } = values
-    const newUser = {
-      address: {
-        geolocation: {
-          lat: '-37.3159',
-          long: '81.1496',
-        },
-        city,
-        number: Number(number),
-        street,
-        zipcode: '12926-3874',
+    const newGRD = {
+      name: '',
+
+      description: '',
+      status: 0,
+      files: 0,
+      responsible: '',
+      project: {
+        id: 0,
+        name: '',
       },
-      name: {
-        firstname,
-        lastname: 'doe',
-      },
-      email,
-      phone,
     }
     if (isModalAdd) {
-      await addUser(newUser)
+      addGRD({ ...newGRD, id: Number(gerarId()) })
     } else {
       if (selectedUserId) {
-        await updateUser({ id: selectedUserId, ...newUser })
+        updateUser({ id: selectedUserId, ...newGRD })
       }
     }
   }
 
   return (
-    <Container>
-      <Modal style={customStyleModal} isOpen={isModalOpen} ariaHideApp={false}>
-        <ModalContent>
-          <h2>{isModalAdd ? 'Adicionar' : 'Editar'} usuário</h2>
-          <button
-            className="closeButton"
-            onClick={() => {
-              setIsModalOpen((value) => !value)
-              setIsModalAdd(() => false)
-            }}
-          >
-            <MdClose size="18" />
-          </button>
-          <div className="hr"></div>
-          <form onSubmit={handleSubmit}>
-            <InputSelected
+    <>
+      <Header />
+      <Container>
+        <Bredcrumb />
+        <Modal
+          style={customStyleModal}
+          isOpen={isModalOpen}
+          ariaHideApp={false}
+        >
+          <ModalContent>
+            <h2>{isModalAdd ? 'Adicionar' : 'Editar'} GRD</h2>
+            <button
+              className="closeButton"
+              onClick={() => {
+                setIsModalOpen((value) => !value)
+                setIsModalAdd(() => false)
+              }}
+            >
+              <MdClose size="18" />
+            </button>
+            <div className="hr"></div>
+            <form onSubmit={handleSubmit}>
+              <InputSelected
+                disabled={false}
+                style={{ marginTop: '10px' }}
+                label="Nome"
+                name="firstname"
+                onChange={handleChange}
+                value={values.firstname}
+              />
+              <InputSelected
+                disabled={false}
+                style={{ marginTop: '10px' }}
+                label="E-mail"
+                name="email"
+                onChange={handleChange}
+                value={values.email}
+              />
+              <InputSelected
+                disabled={false}
+                style={{ marginTop: '10px' }}
+                label="Telefone"
+                name="phone"
+                onChange={handleChange}
+                value={values.phone}
+              />
+              <InputSelected
+                disabled={false}
+                style={{ marginTop: '10px' }}
+                label="Cidade"
+                name="city"
+                onChange={handleChange}
+                value={values.city}
+              />
+              <InputSelected
+                disabled={false}
+                style={{ marginTop: '10px' }}
+                label="Rua"
+                name="street"
+                onChange={handleChange}
+                value={values.street}
+              />
+              <InputSelected
+                disabled={false}
+                style={{ marginTop: '10px' }}
+                label="Número"
+                name="number"
+                onChange={handleChange}
+                value={values.number}
+              />
+              <Button
+                small
+                type="submit"
+                title={isModalAdd ? 'Cadastrar' : 'Atualizar'}
+              />
+            </form>
+          </ModalContent>
+        </Modal>
+        <Wrapper>
+          <WrapperHeaders>
+            <InputSearch
               disabled={false}
               style={{ marginTop: '10px' }}
-              label="Nome"
-              name="firstname"
-              onChange={handleChange}
-              value={values.firstname}
-            />
-            <InputSelected
-              disabled={false}
-              style={{ marginTop: '10px' }}
-              label="E-mail"
-              name="email"
-              onChange={handleChange}
-              value={values.email}
-            />
-            <InputSelected
-              disabled={false}
-              style={{ marginTop: '10px' }}
-              label="Telefone"
-              name="phone"
-              onChange={handleChange}
-              value={values.phone}
-            />
-            <InputSelected
-              disabled={false}
-              style={{ marginTop: '10px' }}
-              label="Cidade"
-              name="city"
-              onChange={handleChange}
-              value={values.city}
-            />
-            <InputSelected
-              disabled={false}
-              style={{ marginTop: '10px' }}
-              label="Rua"
-              name="street"
-              onChange={handleChange}
-              value={values.street}
-            />
-            <InputSelected
-              disabled={false}
-              style={{ marginTop: '10px' }}
-              label="Número"
               name="number"
               onChange={handleChange}
               value={values.number}
+              placeholder="Buscar projeto por nome ou ID"
             />
             <Button
               small
-              type="submit"
-              title={isModalAdd ? 'Cadastrar' : 'Atualizar'}
+              outlined
+              customSize="120px"
+              customStyles={{ marginLeft: '50px' }}
+              title="Filtrar"
             />
-          </form>
-        </ModalContent>
-      </Modal>
-      <Wrapper>
-        <Title>Usuários</Title>
-        <WrapperDataTable>
-          <DataTable
-            columns={headers}
-            data={users || []}
-            defaultSortFieldId={1}
-            customStyles={styles}
+          </WrapperHeaders>
+          <WrapperDataTable>
+            <DataTable
+              columns={headers}
+              data={users || []}
+              defaultSortFieldId={1}
+              customStyles={styles}
+              expandableRows={true}
+              expandableRowsComponent={({ data }) => (
+                <ProjectRow project={data} />
+              )}
+            />
+          </WrapperDataTable>
+          <AddButton
+            onClick={() => {
+              setValues(initialValues)
+              setSelectedUserId(null)
+              setIsModalAdd(true)
+              toggleModal()
+            }}
           />
-        </WrapperDataTable>
-        <AddButton
-          onClick={() => {
-            setValues(initialValues)
-            setSelectedUserId(null)
-            setIsModalAdd(true)
-            toggleModal()
-          }}
-        />
-      </Wrapper>
-    </Container>
+        </Wrapper>
+      </Container>
+    </>
   )
 }
