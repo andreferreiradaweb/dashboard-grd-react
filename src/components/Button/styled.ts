@@ -10,14 +10,7 @@ interface MyButtonTypes {
 }
 
 export const MyButton = styled.button<MyButtonTypes>`
-  ${({
-    disabled,
-    outlined,
-    small,
-    customSize,
-    customColor,
-    customStyles,
-  }) => css`
+  ${({ disabled, outlined, small, customSize, customColor }) => css`
     background-color: ${disabled ? colors.secondary : colors.primary};
     cursor: ${disabled ? 'default' : 'pointer'};
     border-radius: 4px;

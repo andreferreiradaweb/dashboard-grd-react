@@ -16,6 +16,7 @@ import {
   customStyleModal,
   Text,
   WrapperHeaders,
+  Span,
 } from './styles'
 import { AddButton } from '../../components/AddButton'
 import { InputSelected } from '../../components/InputSelected'
@@ -299,7 +300,7 @@ export function HomePage() {
               small
               outlined
               customSize="120px"
-              customStyles={{ marginLeft: '50px' }}
+              styles={{ marginLeft: '50px' }}
               title="Filtrar"
             />
           </WrapperHeaders>
@@ -323,6 +324,9 @@ export function HomePage() {
               toggleModal()
             }}
           />
+          <Text>
+            Total de itens: <Span color={colors.primary}>{users?.length}</Span>
+          </Text>
         </Wrapper>
       </Container>
     </>

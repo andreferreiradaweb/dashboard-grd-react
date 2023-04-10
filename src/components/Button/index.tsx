@@ -8,7 +8,7 @@ interface IProps {
   outlined?: boolean
   customSize?: string
   customColor?: string
-  customStyles?: React.CSSProperties
+  styles?: React.CSSProperties
   small?: boolean
   type?: ButtonTypeProp
 }
@@ -21,7 +21,7 @@ export function Button({
   small,
   customSize,
   customColor,
-  customStyles,
+  styles,
   type,
 }: IProps) {
   return (
@@ -31,7 +31,7 @@ export function Button({
       ) : (
         <MyButton
           small={small}
-          customStyles={customStyles}
+          style={styles}
           customColor={customColor}
           customSize={customSize}
           outlined={outlined}

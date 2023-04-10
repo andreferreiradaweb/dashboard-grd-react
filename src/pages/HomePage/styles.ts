@@ -81,6 +81,11 @@ export const Text = styled.p`
   color: ${({ color }) => color ?? 'inherit'};
 `
 
+export const Span = styled.span`
+  color: ${colors.primary};
+  font-weight: 700;
+`
+
 export const WrapperHeaders = styled.div`
   display: flex;
   width: 100%;
