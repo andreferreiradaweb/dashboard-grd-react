@@ -203,11 +203,10 @@ export function HomePage() {
   }
 
   async function handlePressSubmit() {
-    const { city, email, firstname, number, phone, street } = values
+    const { description, id, name } = values
     const newGRD = {
-      name: '',
-
-      description: '',
+      name,
+      description,
       status: 0,
       files: 0,
       responsible: '',
@@ -249,52 +248,35 @@ export function HomePage() {
             <div className="hr"></div>
             <form onSubmit={handleSubmit}>
               <InputSelected
+                disabled={true}
+                style={{ marginTop: '10px' }}
+                label="ID"
+                name="id"
+                value={gerarId()}
+              />
+              <InputSelected
                 disabled={false}
                 style={{ marginTop: '10px' }}
                 label="Nome"
-                name="firstname"
+                name="name"
                 onChange={handleChange}
-                value={values.firstname}
+                value={values.name}
               />
               <InputSelected
                 disabled={false}
                 style={{ marginTop: '10px' }}
-                label="E-mail"
-                name="email"
+                label="Descrição"
+                name="description"
                 onChange={handleChange}
-                value={values.email}
+                value={values.description}
               />
               <InputSelected
                 disabled={false}
                 style={{ marginTop: '10px' }}
-                label="Telefone"
-                name="phone"
+                label="Projeto"
+                name="project"
                 onChange={handleChange}
-                value={values.phone}
-              />
-              <InputSelected
-                disabled={false}
-                style={{ marginTop: '10px' }}
-                label="Cidade"
-                name="city"
-                onChange={handleChange}
-                value={values.city}
-              />
-              <InputSelected
-                disabled={false}
-                style={{ marginTop: '10px' }}
-                label="Rua"
-                name="street"
-                onChange={handleChange}
-                value={values.street}
-              />
-              <InputSelected
-                disabled={false}
-                style={{ marginTop: '10px' }}
-                label="Número"
-                name="number"
-                onChange={handleChange}
-                value={values.number}
+                value={values.project.name}
               />
               <Button
                 small

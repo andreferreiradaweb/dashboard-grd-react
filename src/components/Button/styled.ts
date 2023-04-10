@@ -5,7 +5,7 @@ interface MyButtonTypes {
   outlined?: boolean
   customSize?: string
   customColor?: string
-  customStyles?: string
+  customStyles?: React.CSSProperties
   small?: boolean
 }
 
@@ -35,8 +35,6 @@ export const MyButton = styled.button<MyButtonTypes>`
     width: ${customSize ?? '100%'};
     height: auto;
     color: ${outlined ? colors.primary : '#fff'};
-    ${customStyles ?? ''}
-
     &:hover {
       filter: ${disabled ? 'none !important' : 'brightness(0.9)'};
     }

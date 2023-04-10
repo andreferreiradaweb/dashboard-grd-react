@@ -8,7 +8,7 @@ interface IProps {
   outlined?: boolean
   customSize?: string
   customColor?: string
-  customStyles?: string
+  customStyles?: React.CSSProperties
   small?: boolean
   type?: ButtonTypeProp
 }

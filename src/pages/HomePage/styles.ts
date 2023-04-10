@@ -95,7 +95,7 @@ export const customStyleModal = {
   },
   content: {
     maxWidth: '650px',
-    height: '580px',
+    height: '450px',
     margin: 'auto',
   },
 }
